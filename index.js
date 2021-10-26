@@ -1,5 +1,5 @@
 const server = require("./src/server");
-require("dotenv");
+require("dotenv").config();
 
 
 
