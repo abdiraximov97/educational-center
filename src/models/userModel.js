@@ -22,7 +22,7 @@ module.exports = async(sequelize, Sequelize) => {
         },
         user_gender: {
             type: Sequelize.ENUM,
-            value: ['male', 'femele'],
+            values: ['male', 'femele'],
             allowNull: false,
         }
     });
