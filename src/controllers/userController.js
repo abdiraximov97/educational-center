@@ -8,7 +8,13 @@ module.exports = class UserController {
                 res.error
             );
 
-            console.log(username, password);
+            const user = await req.db.users.findOne({
+                where: {
+                    user_username: username,
+                }
+            });
+
+            console.log(user);
         } catch (error) {
             console.log("SignInController Error: " + error + "");
             next(error);
