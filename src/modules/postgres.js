@@ -1,7 +1,7 @@
 const { build } = require("joi");
 const { Sequelize } = require("sequelize");
 const userModel = require("../models/userModel");
-const reletion = require("./reletion");
+const reletions = require("./reletions");
 
 const sequelize = new Sequelize(process.env.DATABASE_URL, {
     logging: false,
@@ -15,7 +15,7 @@ module.exports = async function postgres() {
 
         db.users = await userModel(sequelize, Sequelize);
 
-        reletion
+        await reletions(db);
 
         return db;
     } catch (error) {
