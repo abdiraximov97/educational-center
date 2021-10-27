@@ -1,5 +1,5 @@
-const { build } = require("joi");
-const { Sequelize } = require("sequelize");
+const { Sequelize, DataTypes } = require("sequelize");
+const sessionModel = require("../models/sessionModel");
 const userModel = require("../models/userModel");
 const reletions = require("./reletions");
 
@@ -14,8 +14,11 @@ module.exports = async function postgres() {
         let db = {};
 
         db.users = await userModel(sequelize, Sequelize);
+        db.sessions = await sessionModel(sequelize, Sequelize);
 
         await reletions(db);
+
+        await sequelize.sync();
 
         return db;
     } catch (error) {

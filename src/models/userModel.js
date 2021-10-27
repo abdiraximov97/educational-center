@@ -1,7 +1,5 @@
-const { Sequelize } = require("sequelize/types");
-
-module.exports = (sequelize, Sequelize) => {
-    sequelize.define("users", {
+module.exports = async(sequelize, Sequelize) => {
+    return await sequelize.define("users", {
         user_id: {
             type: Sequelize.UUID,
             defaultValue: Sequelize.UUIDV4,
@@ -27,5 +25,5 @@ module.exports = (sequelize, Sequelize) => {
             value: ['male', 'femele'],
             allowNull: false,
         }
-    })
-}
+    });
+};
