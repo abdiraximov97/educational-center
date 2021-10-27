@@ -34,17 +34,17 @@ module.exports = class Validations {
   static async SignInValidation(data, customError) {
     return await joi
       .object({
+        username: joi
+          .string()
+          .regex(/^(?=[a-zA-Z0-9._]{8,20}$)(?!.*[_.]{2})[^_.].*[^_.]$/)
+          .required()
+          .error(new customError(`Username is invalid`)),
         password: joi
           .string()
           .required()
           .min(6)
           .max(128)
           .error(new customError(400, `Password is invalid`)),
-        username: joi
-          .string()
-          .regex(/^(?=[a-zA-Z0-9._]{8,20}$)(?!.*[_.]{2})[^_.].*[^_.]$/)
-          .required()
-          .error(new Error(`Username is invalid`)),
       })
       .validateAsync(data);
   }
