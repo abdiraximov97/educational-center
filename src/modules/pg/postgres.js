@@ -1,6 +1,6 @@
 const { Sequelize, DataTypes } = require("sequelize");
-const sessionModel = require("../models/sessionModel");
-const userModel = require("../models/userModel");
+const sessionModel = require("../../models/sessionModel");
+const userModel = require("../../models/userModel");
 const reletions = require("./reletions");
 
 const sequelize = new Sequelize(process.env.DATABASE_URL, {
