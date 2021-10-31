@@ -52,7 +52,9 @@ module.exports = class UserController {
 
     static async CreateUserController(req, res, next) {
         try {
+            const data = await SignInValidation(req.body, res.error);
 
+            console.log(data);
         } catch (error) {
             next(error);
         }
