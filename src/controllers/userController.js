@@ -51,7 +51,7 @@ module.exports = class UserController {
             console.log("SignInController Error: " + error + "");
             next(error);
         }
-    }
+    };
 
     static async CreateUserController(req, res, next) {
         try {
@@ -77,6 +77,36 @@ module.exports = class UserController {
                 error.errorCode = 400,
                     error.message = "Username already exists"
             }
+            next(error);
+        }
+    };
+
+    static async UserGetController(req, res, next) {
+        try {
+            permissionChecker("admin", req.user_permissions, res.error);
+
+            const page = req.params.page ? req.params.page - 1 : 0;
+            const limit = req.params.limit || 15;
+
+            const users = await req.db.users.findAll({
+                attributes: [`user_id`, `user_name`, `user_username`, `user_gender`],
+                raw: true,
+                limit: limit,
+                offset: page * 15,
+                order: [
+                    ["createdAt", "DESC"]
+                ]
+            });
+
+            res.status(200).json({
+                ok: true,
+                message: "Users list",
+                data: {
+                    users,
+                }
+            })
+        } catch (error) {
+            console.log("UserGetController Error: " + error + "");
             next(error);
         }
     }
