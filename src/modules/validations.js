@@ -19,7 +19,7 @@ module.exports = class Validations {
                     .error(new Error(`Password is invalid`)),
                 username: joi
                     .string()
-                    .regex(/^(?=[a-zA-Z0-9._]{8,20}$)(?!.*[_.]{2})[^_.].*[^_.]$/)
+                    // .regex(/^(?=[a-zA-Z0-9._]{8,20}$)(?!.*[_.]{2})[^_.].*[^_.]$/)
                     .required()
                     .error(new Error(`Username is invalid`)),
                 gender: joi
@@ -36,7 +36,7 @@ module.exports = class Validations {
             .object({
                 username: joi
                     .string()
-                    .regex(/^(?=[a-zA-Z0-9._]{8,20}$)(?!.*[_.]{2})[^_.].*[^_.]$/)
+                    // .regex(/^(?=[a-zA-Z0-9._]{8,20}$)(?!.*[_.]{2})[^_.].*[^_.]$/)
                     .required()
                     .error(new customError(`Username is invalid`)),
                 password: joi

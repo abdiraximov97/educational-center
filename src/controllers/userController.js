@@ -1,5 +1,6 @@
-const { SignInValidation } = require("../modules/validations");
+const { SignInValidation, SignUpValidation } = require("../modules/validations");
 const { createToken } = require("../modules/jwt");
+const { generateHash } = require("../modules/bcrypt");
 
 module.exports = class UserController {
     static async SignInController(req, res, next) {
@@ -42,8 +43,9 @@ module.exports = class UserController {
                 data: {
                     token,
                 }
-            })
-            console.log(session);
+            });
+
+            console.log(token);
         } catch (error) {
             console.log("SignInController Error: " + error + "");
             next(error);
@@ -52,10 +54,27 @@ module.exports = class UserController {
 
     static async CreateUserController(req, res, next) {
         try {
-            const data = await SignInValidation(req.body, res.error);
-
+            const data = await SignUpValidation(req.body, res.error);
             console.log(data);
+
+            const user = await req.body.users.create({
+                user_name: data.name,
+                user_password: await generateHash(data.password),
+                user_gender: data.gender,
+                user_username: data.username
+            });
+
+            console.log(user);
+
+            res.status(201).json({
+                ok: true,
+                message: "User create successufully",
+            })
         } catch (error) {
+            if (error.message == "Validation error") {
+                error.errorCode = 400,
+                    error.message = "Username already exists"
+            }
             next(error);
         }
     }
