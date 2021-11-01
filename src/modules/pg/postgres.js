@@ -1,6 +1,7 @@
 const { Sequelize, DataTypes } = require("sequelize");
 const permissionModel = require("../../models/permissionModel");
 const sessionModel = require("../../models/sessionModel");
+const teacherModel = require("../../models/teacherModel");
 const userModel = require("../../models/userModel");
 const userPermissionModel = require("../../models/userPermissionModel");
 const init = require("./init");
@@ -20,6 +21,7 @@ module.exports = async function postgres() {
         db.sessions = await sessionModel(sequelize, Sequelize);
         db.permissions = await permissionModel(sequelize, Sequelize);
         db.user_permissions = await userPermissionModel(sequelize, Sequelize);
+        db.teachers = await teacherModel(sequelize, Sequelize);
 
         await reletions(db);
         await init(db);

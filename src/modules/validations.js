@@ -19,7 +19,7 @@ module.exports = class Validations {
                     .error(new Error(`Password is invalid`)),
                 username: joi
                     .string()
-                    // .regex(/^(?=[a-zA-Z0-9._]{8,20}$)(?!.*[_.]{2})[^_.].*[^_.]$/)
+                    .regex(/^(?=[a-zA-Z0-9._]{8,20}$)(?!.*[_.]{2})[^_.].*[^_.]$/)
                     .required()
                     .error(new Error(`Username is invalid`)),
                 gender: joi
@@ -36,7 +36,7 @@ module.exports = class Validations {
             .object({
                 username: joi
                     .string()
-                    // .regex(/^(?=[a-zA-Z0-9._]{8,20}$)(?!.*[_.]{2})[^_.].*[^_.]$/)
+                    .regex(/^(?=[a-zA-Z0-9._]{8,20}$)(?!.*[_.]{2})[^_.].*[^_.]$/)
                     .required()
                     .error(new customError(`Username is invalid`)),
                 password: joi
@@ -45,6 +45,22 @@ module.exports = class Validations {
                     .min(5)
                     .max(128)
                     .error(new customError(400, `Password is invalid`)),
+            })
+            .validateAsync(data);
+    };
+
+    static async AddTeacherValidation(data, customError) {
+        return await joi
+            .object({
+                user_id: joi
+                    .uuid()
+                    .required()
+                    .error(new customError(`User ID is invalid`)),
+                phone: joi
+                    .string()
+                    .required()
+                    .regex(/^998(9[012345789]|6[125679]|7[01234569])[0-9]{7}$/)
+                    .error(new customError(`Phone is invalid`)),
             })
             .validateAsync(data);
     }
