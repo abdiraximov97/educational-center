@@ -64,4 +64,28 @@ module.exports = class Validations {
             })
             .validateAsync(data);
     }
+
+    static async CourseCreateValidation(data, customError) {
+        return await joi
+            .object({
+                name: joi
+                    .string()
+                    .required()
+                    .min(4)
+                    .max(64)
+                    .error(new customError(400, `Course name is invalid`)),
+                description: joi
+                    .string()
+                    .required()
+                    .min(64)
+                    .error(new customError(400, `Course description is invalid`)),
+                price: joi
+                    .number()
+                    .min(0)
+                    .required()
+                    .error(new customError(400, `Course price is invalid`)),
+
+            })
+            .validateAsync(data);
+    };
 };
