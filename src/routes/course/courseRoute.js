@@ -3,7 +3,7 @@ const {
 	CourseGetController,
 	CourseUpdatePutController,
 	CourseGetOneController,
-} = require("../../controllers/CourseController");
+} = require("../../controllers/courseController");
 const authMiddleware = require("../../middlewares/authMiddleware");
 const permissionMiddleware = require("../../middlewares/permissionMiddleware");
 

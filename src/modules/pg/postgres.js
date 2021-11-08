@@ -1,13 +1,13 @@
 const { Sequelize } = require("sequelize");
-const SessionModel = require("../../models/uessionModel");
+const SessionModel = require("../../models/sessionModel");
 const UserModel = require("../../models/userModel");
-const CourseModel = require("../../models/gourseModel");
-const PermissionModel = require("../../models/germissionModel");
+const CourseModel = require("../../models/courseModel");
+const PermissionModel = require("../../models/permissionModel");
 const init = require("./init");
 const relations = require("./relations");
-const UserPermissionModel = require("../../models/gserPermissionModel");
-const TeachersModel = require("../../models/geachersModel");
-const ApplicantModel = require("../../models/gpplicantModel");
+const UserPermissionModel = require("../../models/userPermissionModel");
+const TeachersModel = require("../../models/teacherModel");
+const ApplicantModel = require("../../models/applicantModel");
 const GroupModel = require("../../models/groupModel");
 const GroupStudentsModel = require("../../models/groupStudentsModel");
 
@@ -33,14 +33,12 @@ module.exports = async function postgres() {
 
 		await relations(db);
 
-		// await db.applicants.sync({ force: true });
-
 		await init(db);
 
-		await sequelize.sync({ force: true });
+		await sequelize.sync({ force: false });
 
 		return db;
 	} catch (error) {
-		console.error("Unable to connect to the database:", error);
+		console.error("Postgres error:", error);
 	}
 };
