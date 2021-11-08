@@ -1,13 +1,17 @@
-const { TeacherCreatePostController, TeacherUpdatePutController, TeacherGetController } = require("../../controllers/teacherController");
+const {
+	TeacherCreatePostController,
+	TeacherUpdatePutController,
+	TeacherGetController,
+} = require("../../controllers/teacherController");
 const authMiddleware = require("../../middlewares/authMiddleware");
 const permissionMiddleware = require("../../middlewares/permissionMiddleware");
 
-const teacherRoute = require("express").Router();
+const TeacherRoute = require("express").Router();
 
-teacherRoute.use([authMiddleware, permissionMiddleware]);
+TeacherRoute.use([authMiddleware, permissionMiddleware]);
 
-teacherRoute.post("/", TeacherCreatePostController);
-teacherRoute.put("/:teacher_id", TeacherUpdatePutController);
-teacherRoute.get("/", TeacherGetController);
+TeacherRoute.post("/", TeacherCreatePostController);
+TeacherRoute.put("/:teacher_id", TeacherUpdatePutController);
+TeacherRoute.get("/", TeacherGetController);
 
-module.exports = teacherRoute;
+module.exports = TeacherRoute;

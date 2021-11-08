@@ -19,7 +19,4 @@ module.exports = async function init(db) {
         user_id: admin.dataValues.user_id,
         permission_id: admin_permission.dataValues.permission_id,
     });
-
-    console.log(set_permission);
-
 }

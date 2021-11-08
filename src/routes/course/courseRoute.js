@@ -1,18 +1,38 @@
-const { CourseCreatePostController } = require("../../controllers/courseController");
-const { TeacherUpdatePutController, TeacherCreatePostController } = require("../../controllers/teacherController");
+const {
+	CourseCreatePostController,
+	CourseGetController,
+	CourseUpdatePutController,
+	CourseGetOneController,
+} = require("../../controllers/CourseController");
 const authMiddleware = require("../../middlewares/authMiddleware");
 const permissionMiddleware = require("../../middlewares/permissionMiddleware");
 
-const expressFileUpload = require("express-fileupload");
+const expressFileUploadMiddleware = require("express-fileupload");
 
-const courseRoute = require("express").Router();
+const CourseRoute = require("express").Router();
 
-courseRoute.use([authMiddleware, permissionMiddleware]);
-courseRoute.post("/", expressFileUpload({
-    abortOnLimit: true,
-    safeFileNames: true,
+CourseRoute.use([authMiddleware, permissionMiddleware]);
 
-}), CourseCreatePostController);
+CourseRoute.post(
+	"/",
+	expressFileUploadMiddleware({
+		abortOnLimit: true,
+		safeFileNames: true,
+	}),
+	CourseCreatePostController
+);
 
+CourseRoute.put(
+	"/:course_id",
+	expressFileUploadMiddleware({
+		abortOnLimit: true,
+		safeFileNames: true,
+	}),
+	CourseUpdatePutController
+);
 
-module.exports = courseRoute;
+CourseRoute.get("/", CourseGetController);
+
+CourseRoute.get("/:course_id", CourseGetOneController);
+
+module.exports = CourseRoute;

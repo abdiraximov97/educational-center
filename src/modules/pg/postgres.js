@@ -1,39 +1,46 @@
-const { Sequelize, DataTypes } = require("sequelize");
-const courseModel = require("../../models/courseModel");
-const permissionModel = require("../../models/permissionModel");
-const sessionModel = require("../../models/sessionModel");
-const teacherModel = require("../../models/teacherModel");
-const userModel = require("../../models/userModel");
-const userPermissionModel = require("../../models/userPermissionModel");
+const { Sequelize } = require("sequelize");
+const SessionModel = require("../../models/uessionModel");
+const UserModel = require("../../models/userModel");
+const CourseModel = require("../../models/gourseModel");
+const PermissionModel = require("../../models/germissionModel");
 const init = require("./init");
-const reletions = require("./reletions");
+const relations = require("./relations");
+const UserPermissionModel = require("../../models/gserPermissionModel");
+const TeachersModel = require("../../models/geachersModel");
+const ApplicantModel = require("../../models/gpplicantModel");
+const GroupModel = require("../../models/groupModel");
+const GroupStudentsModel = require("../../models/groupStudentsModel");
 
 const sequelize = new Sequelize(process.env.DATABASE_URL, {
-    logging: false,
+	logging: false,
 });
 
 module.exports = async function postgres() {
-    try {
-        await sequelize.authenticate();
+	try {
+		await sequelize.authenticate();
 
-        let db = {};
+		let db = {};
 
-        db.users = await userModel(sequelize, Sequelize);
-        db.sessions = await sessionModel(sequelize, Sequelize);
-        db.permissions = await permissionModel(sequelize, Sequelize);
-        db.user_permissions = await userPermissionModel(sequelize, Sequelize);
-        db.teachers = await teacherModel(sequelize, Sequelize);
-        db.courses = await courseModel(sequelize, Sequelize);
+		db.users = await UserModel(sequelize, Sequelize);
+		db.sessions = await SessionModel(sequelize, Sequelize);
+		db.permissions = await PermissionModel(sequelize, Sequelize);
+		db.user_permissions = await UserPermissionModel(sequelize, Sequelize);
+		db.teachers = await TeachersModel(sequelize, Sequelize);
+		db.courses = await CourseModel(sequelize, Sequelize);
+		db.applicants = await ApplicantModel(sequelize, Sequelize);
+		db.groups = await GroupModel(sequelize, Sequelize);
+		db.group_students = await GroupStudentsModel(sequelize, Sequelize);
 
-        await reletions(db);
-        await init(db);
+		await relations(db);
 
-        await sequelize.sync({
-            force: false,
-        });
+		// await db.applicants.sync({ force: true });
 
-        return db;
-    } catch (error) {
-        console.log("postgres Error:" + error + "");
-    }
-}
+		await init(db);
+
+		await sequelize.sync({ force: true });
+
+		return db;
+	} catch (error) {
+		console.error("Unable to connect to the database:", error);
+	}
+};

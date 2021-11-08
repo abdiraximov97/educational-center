@@ -1,114 +1,112 @@
-const { SignInValidation, SignUpValidation } = require("../modules/validations");
+const {
+	SignInValidation,
+	SignUpValidation,
+} = require("../modules/validations");
 const { createToken } = require("../modules/jwt");
 const { generateHash } = require("../modules/bcrypt");
 const permissionChecker = require("../helpers/permissionChecker");
 
 module.exports = class UserController {
-    static async SignInController(req, res, next) {
-        try {
-            const { username, password } = await SignInValidation(
-                req.body,
-                res.error
-            );
+	static async SignInController(req, res, next) {
+		try {
+			const { username, password } = await SignInValidation(
+				req.body,
+				res.error
+			);
 
-            const user = await req.db.users.findOne({
-                where: {
-                    user_username: username,
-                },
-                raw: true,
-            });
+			const user = await req.db.users.findOne({
+				where: {
+					user_username: username,
+				},
+				raw: true,
+			});
 
-            console.log(user);
+			if (!user) throw new res.error(400, "User not found");
 
-            if (!user) throw new res.error(400, "User not found");
+			await req.db.sessions.destroy({
+				where: {
+					session_useragent: req.headers["user-agent"] || "Unknown",
+					user_id: user.user_id,
+				},
+			});
 
-            await req.db.session.destroy({
-                session_useragent: req.headers["user-agent"] || "Unknown",
-                user_id: user.user_id,
-            });
+			const session = await req.db.sessions.create({
+				session_useragent: req.headers["user-agent"] || "Unknown",
+				user_id: user.user_id,
+			});
 
-            const session = await req.db.session.create({
-                session_useragent: req.headers["user-agent"] || "Unknown",
-                user_id: user.user_id,
-            }, {
-                raw: true,
-            });
+			const token = await createToken({
+				session_id: session.dataValues.session_id,
+			});
 
-            const token = await createToken({
-                session_id: session.dataValues.session_id,
-            })
+			res.status(201).json({
+				ok: true,
+				message: "Token created successfully",
+				data: {
+					token,
+				},
+			});
+		} catch (error) {
+			next(error);
+		}
+	}
 
-            res.status(201).json({
-                ok: true,
-                message: "Token created seccessfully",
-                data: {
-                    token,
-                }
-            });
+	static async CreateUserController(req, res, next) {
+		try {
+			permissionChecker("admin", req.user_permissions, res.error);
 
-            console.log(token);
-        } catch (error) {
-            console.log("SignInController Error: " + error + "");
-            next(error);
-        }
-    };
+			const data = await SignUpValidation(req.body, res.error);
 
-    static async CreateUserController(req, res, next) {
-        try {
-            permissionChecker("admin", req.user_permissions, res.error)
-            const data = await SignUpValidation(req.body, res.error);
-            console.log(data);
+			const user = await req.db.users.create({
+				user_name: data.name,
+				user_password: await generateHash(data.password),
+				user_gender: data.gender,
+				user_username: data.username,
+			});
 
-            const user = await req.body.users.create({
-                user_name: data.name,
-                user_password: await generateHash(data.password),
-                user_gender: data.gender,
-                user_username: data.username
-            });
+			res.status(201).json({
+				ok: true,
+				message: "User created successfully",
+			});
+		} catch (error) {
+			if (error.message == "Validation error") {
+				error.errorCode = 400;
+				error.message = "Username already exists";
+			}
+			next(error);
+		}
+	}
 
-            console.log(user);
+	static async UserGetController(req, res, next) {
+		try {
+			permissionChecker("admin", req.user_permissions, res.error);
 
-            res.status(201).json({
-                ok: true,
-                message: "User create successufully",
-            })
-        } catch (error) {
-            if (error.message == "Validation error") {
-                error.errorCode = 400,
-                    error.message = "Username already exists"
-            }
-            next(error);
-        }
-    };
+			const page = req.query.page ? req.query.page - 1 : 0;
+			const limit = req.query.limit || 15;
+			const order = req.query.order == "DESC" ? "DESC" : "ASC";
 
-    static async UserGetController(req, res, next) {
-        try {
-            permissionChecker("admin", req.user_permissions, res.error);
+			const users = await req.db.users.findAll({
+				attributes: [
+					"user_id",
+					"user_name",
+					"user_username",
+					"user_gender",
+				],
+				raw: true,
+				limit: limit,
+				offset: page * 15,
+				order: [["createdAt", order]],
+			});
 
-            const page = req.query.page ? req.query.page - 1 : 0;
-            const limit = req.query.limit || 15;
-            const order = req.query.order == "DESC" ? "DESC" : "ASC";
-
-            const users = await req.db.users.findAll({
-                attributes: [`user_id`, `user_name`, `user_username`, `user_gender`],
-                raw: true,
-                limit: limit,
-                offset: page * 15,
-                order: [
-                    ["createdAt", order]
-                ]
-            });
-
-            res.status(200).json({
-                ok: true,
-                message: "Users list",
-                data: {
-                    users,
-                }
-            })
-        } catch (error) {
-            console.log("UserGetController Error: " + error + "");
-            next(error);
-        }
-    }
+			res.status(200).json({
+				ok: true,
+				message: "Users list",
+				data: {
+					users,
+				},
+			});
+		} catch (error) {
+			next(error);
+		}
+	}
 };
